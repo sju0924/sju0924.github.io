@@ -21,7 +21,7 @@ user:
   name: Serendipity
   pic: /assets/img/cat.jpg
   picAlt: "catbook"
-  job: a category-centric theme
+  job: 대학생
   aboutme: true # comment this out if you don't need the 'about' page.
 
 exclude:
