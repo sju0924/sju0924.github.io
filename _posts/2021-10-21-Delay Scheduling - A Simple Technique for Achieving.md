@@ -54,3 +54,36 @@ Delay Scheduling 으로 이런 문제를 해결할 수 있다. 작업이 데이�
 HFS 에서는 아래와 같은 결점들을 다루고자 한다.
 1. 어떤 사용자는 다른 사용자보다 많은 작업을 실행한다. 사용자가 아니라, 작업의 공평한 공유를 원한다.
 2. 사용자들은 작업 스케줄링을 컨트롤하길 원한다.
+3. 클러스터에 다수의 긴 작업이 대기하고 있어도 예측할 수 있게 수행되어야 한다.
+
+이는 2단계 scheduling 계층을 사용한다. fair sharing 을 사용하여 pool 전체에 작업 슬롯을 할당하는 것이고, 2단계는 각 pool 이 우선순위 FIFO 를 사용하거나 fair sharing 을 사용하여 작업을 슬롯에 할당하는 것이다. 그러면 pool 끼리 정렬해서 fair sharing 을 달성핼 수 있다. 또한 그 안에서도 내부 정책에 따라 구현한다.
+
+<br>
+<br>
+
+이를 `Delay scheduling` 내에서 구현해 보자.
+1. 작업이 로컬에 대기하는 시간을 정하기 위해 최대 대기 시간을 설정한다.
+2. 작업이 node-local task 를 시작할 수 없을 때, rack locality 달성을 위해 두 가지 수준의 delay scheduling 을 사용한다.
+    - 각 작업은 node-local task 만 실행할 수 있는 locality level 이 0일 때 시작
+    - 1초 이상 기다리면 locality level 1로 이동하여 rack-local task 를 시작할 수 있음
+    - W2 초를 더 기다리면 level 2로 이동하여 off-rack task 를 시작할 수 있음
+    - 현재보다 더 로컬작업을 시작하는경우 이전 수준으로 다시 내려감
+
+# Analyze
+
+
+## IO-heavy load 에서
+* Delay scheduling 에서 모든 빈에 대해 로컬리티 99~100% 달성
+* FIFO, Naive fair 에서는 job 이 커질수록 로컬리티 증가.
+
+## CPU-heavy workload 에서
+* Delay Scheduling 이 small job 에서 FIFO 보다 큰 성능 개선. FIFO 에서 큰 job 을 더 오래 키다려야 하기 때문. Naive 와는 큰 차이 없음
+
+## Mixed-workload 에서
+* fair sharing 에서는 small job 에서 빠름.
+
+## small jobs 에서
+* 로컬리티 증가, 스루풋 증가
+
+## sticky slot 에서
+* 딜레이 스케줄링을 적용하지 않으면 job 수가 많을 수록 로컬리티 감소. 적용시 로컬리티 99~100% 달성
