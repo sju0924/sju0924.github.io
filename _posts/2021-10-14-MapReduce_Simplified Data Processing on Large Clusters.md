@@ -32,23 +32,23 @@ comments: true
 
 ## Fault Tolerance
 
- ### worker failure
+### worker failure
  마스터는 worker들에 주기적으로 ping을 날려서 확인하고 응답이 없을 시 fail로 인식한다. 그 worker에 의해 처리된 맵 작업은 idle 상태로 돌아오고 다시 스케줄링된다. 또한 처리 중이었던 맵이나 리듀스 작업 또한 idle 상태로 돌아와서 다시 스케줄링된다.<br>
  완료된 맵 작업들까지 다시 실행하는 이유는, 맵의 결과들이 failed worker의 로컬에 있기 때문이다. 반면 완료된 리듀스 작업은 global file system 에 저장되기 때문에 다시 실행할 필요는 없다.
 
 ### Master Failure
 마스터가 주기적으로 checkPoint를 만들어 마스터가 죽었을 때 마지막 체크포인트에서 다시 시작할 수 있다. 하지만 마스터가 하나라면 Master Failure 가 일어나고, 맵리듀스 연산을 다시 시작해야 한다.
 
- ## Locality
+## Locality
  맵리듀스 마스터가 입력 파일의 위치 정보를 받고, 해당 데이터의 복제본이 있는 머신에서 맵 작업을 스케줄링하여 입력 데이터가 지역적으로~locally~ 읽혀 네트워크 Bandwidth를 쓰지 않는다.
 
- ## Task Granulrity
+## Task Granulrity
  M과 R이 worker의 수보다 많을수록 이상적이다.
 
- ## Backup Tasks
+## Backup Tasks
  전체 시간을 늦추는 흔한 원인 중 하나는 마지막 몇 단계를 비정상적으로 길게 처리하는 머신 ~straggler~ 이다. 이들의 방해를 줄이기 위해서 마스터가 어떤 작업이 끝나갈 때 남은 in-progress 작업에 대해 backup execution을 스케줄링한다. 그래서 원래나 백업 작업 중 하나가 끝나면 complete 상태가 된다. 
 
- # Conclusion
+# Conclusion
  맵 리듀스의 성공의 이유에는
  1. 세부 사항은 라이브러리에 숨기고 모델을 사용하기 쉽게 만들어 분산이나 병렬 프로그래밍에 경험이 없는 사용자도 쉽게 사용할 수 있다.
  2. 다양한 종류의 문제들을 맵리듀스 연산으로 표현할 수 있다.
