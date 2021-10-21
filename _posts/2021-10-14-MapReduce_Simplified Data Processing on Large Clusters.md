@@ -27,10 +27,11 @@ comments: true
 # Implementation
  `Map` 동작은 다수의 기계에 분산되어 있다. 자동으로 입력 데이터를 M개로 split 하여 서로 다른 장치에서 병렬로 처리된다. `Reduce` 동작은 intermediate key space를 R개로 분산시켜서 작업한다.
 
- ## Master Data Structures
+## Master Data Structures
  각 맵이나 리듀스 작업들은 idle, in-progress, complete 의 상태를 가지고 있다. idle을 제외하고 worker machine 의 정보까지 갖고 있다. 맵 작업이 끝나면 결과를 마스터가 받아서 리듀스 작업을 하는 worker에게 push한다.
 
- ## Fault Tolerance
+## Fault Tolerance
+
  ### worker failure
  마스터는 worker들에 주기적으로 ping을 날려서 확인하고 응답이 없을 시 fail로 인식한다. 그 worker에 의해 처리된 맵 작업은 idle 상태로 돌아오고 다시 스케줄링된다. 또한 처리 중이었던 맵이나 리듀스 작업 또한 idle 상태로 돌아와서 다시 스케줄링된다.<br>
  완료된 맵 작업들까지 다시 실행하는 이유는, 맵의 결과들이 failed worker의 로컬에 있기 때문이다. 반면 완료된 리듀스 작업은 global file system 에 저장되기 때문에 다시 실행할 필요는 없다.
