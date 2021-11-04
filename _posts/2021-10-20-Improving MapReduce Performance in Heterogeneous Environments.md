@@ -22,7 +22,7 @@ Idling node 가 있는 경우 스케줄러는
  순서를 정할 때 Progress Score 항목을 사용한다. 이는 각 작업을 Phase 로 쪼갠 후 진행상황을 반영하였다. 모든 Phase 에 동일한 가중치가 주어져 시간이 더 걸리는 Phase를 Progress Score을 통해 알 수 없다.<br>
  straggler 인지 판단하는 기준이 Progress Score의 평균에서 0.2를 뺀 값이고, 이값보다 작고 1분보다 더 많이 남아 있는 것이다. straggler 는 `Speculative Execution` 의 대상이 된다.
 
- ## Speculative Execution
+## Speculative Execution
 작업의 응답속도를 줄이는 것이 목적이지만, 느린 작업을 복제하는 것만으로 끝나지 않는다.
 1. Speculative Execution 에는 비용이 든다.
     - 기준값 이하인 모든 Task를 느린 작업으로 인식하여 추가 작업이 할단되는데, 대규모일 수 있고 다른 작업에 영향을 끼칠 수 있다.
